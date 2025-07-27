@@ -18,46 +18,57 @@ A mock runner lets us develop/test RL logic before the real pipeline is ready.
 ---
 
 ## 2. Directory Structure
+
+```text
 rl/
-├─ agents/
-│ ├─ base_agent.py # Abstract agent API
-│ └─ dqn_agent.py # Minimal DQN (discrete actions)
+├─ agents/                               # RL algorithms
+│  ├─ __init__.py
+│  ├─ base_agent.py                      # Abstract agent interface
+│  └─ dqn_agent.py                       # Minimal DQN (discrete actions)
 │
 ├─ configs/
-│ └─ config_example.yaml # Example config (env/agent/trainer/reward)
+│  └─ config_example.yaml                # Example config (env/agent/trainer/reward)
 │
 ├─ envs/
-│ ├─ base_env.py # Abstract Env (reset/step)
-│ └─ openroad_env.py # Main Env: action idx → params → tool run → QoR/reward
+│  ├─ __init__.py
+│  ├─ base_env.py                        # Abstract Env (reset/step)
+│  └─ openroad_env.py                    # Env: idx action → params → tool → QoR → reward
 │
 ├─ interfaces/
-│ ├─ actions.yaml # Action schema: parameter names/types/ranges
-│ ├─ qor_schema.yaml # QoR schema: metrics, units, better/worse
-│ └─ README_interfaces.md # Contract doc for RL ↔ HW
+│  ├─ actions.yaml                       # Action schema: param names/types/ranges
+│  ├─ qor_schema.yaml                    # QoR schema: metric names/units/better-worse
+│  └─ README_interfaces.md               # Contract doc for RL ↔ HW
 │
 ├─ memory/
-│ └─ replay_buffer.py # FIFO buffer for off-policy RL
+│  ├─ __init__.py
+│  └─ replay_buffer.py                   # FIFO buffer for off‑policy RL
 │
 ├─ runners/
-│ ├─ mock_runner.py # Fake QoR (no tool dependency)
-│ └─ tool_runner.py # Real tool wrapper + QoR parsing hooks
+│  ├─ __init__.py
+│  ├─ mock_runner.py                     # Fake QoR generator (no tool dependency)
+│  └─ tool_runner.py                     # Real tool wrapper + QoR parsing hooks
 │
 ├─ scripts/
-│ ├─ run_openroad_with_params.py # Called via openroad -python; reads params JSON, runs flow, dumps QoR
-│ ├─ qor_parser.py # Parse QoR from stdout/JSON
-│ ├─ train.py # Training entry
-│ ├─ eval.py # Evaluation entry
-│ └─ debug_spaces.py # Sanity check for action encoder
+│  ├─ __init__.py
+│  ├─ run_openroad_with_params.py        # Called via `openroad -python`; reads params JSON, runs flow, dumps QoR
+│  ├─ qor_parser.py                      # Parse QoR from stdout/JSON
+│  ├─ train.py                           # Training entry
+│  ├─ eval.py                            # Evaluation entry
+│  └─ debug_spaces.py                    # Sanity check for action space/encoder
 │
 ├─ trainers/
-│ └─ trainer.py # Generic DQN-style training loop
+│  ├─ __init__.py
+│  └─ trainer.py                         # Generic DQN-style training loop
 │
 └─ utils/
-├─ action_encoder.py # Discrete action index ↔ param dict (from actions.yaml)
-├─ reward_fn.py # Reward calculator (weights, normalization)
-├─ schema_loader.py # YAML schema loaders
-├─ logger.py # Stdout + JSONL logger
-└─ config.py # YAML config loader
+   ├─ __init__.py
+   ├─ action_encoder.py                  # Discrete action index ↔ param dict (from actions.yaml)
+   ├─ reward_fn.py                       # Reward calculator (weights/normalization)
+   ├─ schema_loader.py                   # YAML schema loaders
+   ├─ logger.py                          # Stdout + JSONL logger
+   └─ config.py                          # YAML config loader
+```
+
 
 
 ### Module Flow
