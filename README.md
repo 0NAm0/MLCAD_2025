@@ -1,103 +1,144 @@
-# MLCAD_Contest_ReSynthAI_Benchmark
+# RL Framework for MLCAD25
 
-Disclaimer: Please read the MLCAD Contest description file available in this repository, which describes the contest, before looking into the benchmarks and scripts available in this repository. The README file only helps navigate and understand the benchmarks and scripts; it does not serve as the contest description.
+**Status:** RL scaffold is implemented and runs with a mock backend. We’re waiting on the hardware/tool team to finalize parameters, scripts, and QoR outputs to switch to the real flow.
 
-This GitHub repository has the public benchmarks for the 2025 MLCAD CAD Contest to perform physical-aware logic resynthesis. The hidden benchmarks will be released after the contest. This contest's primary goal is to explore the state-of-the-art algorithms for physical-aware resynthesis to drive academic research to generate scalable algorithms for gate sizing, gate cloning, buffer insertion or removal, Vt swapping, and logic restructuring using ML (supervised, unsupervised, or reinforcement learning-based techniques). The secondary goal is to allow the use of a recently developed ML EDA research infrastructure that leverages [*OpenROAD's Python API*](https://github.com/The-OpenROAD-Project/OpenROAD) and [*Nvidia's CircuitOps*](https://github.com/NVlabs/CircuitOps/) data representation format for ML-EDA or GPU-accelerated EDA research.         OpenROAD's Python APIs allow users to execute EDA tools with just a few lines of Python code and to access the EDA tool database directly through Python APIs, bypassing traditional file I/O. CircuitOps provides an ML-friendly data infrastructure that uses Labeled Property Graphs (LPGs) backed by Intermediate Representation (IR) Tables to create datasets for ML-EDA applications. The Python-compatible LPG minimizes the developmental effort required for ML-EDA research.
+---
 
+## 1. Purpose
 
-## Table of Content
-  - [*MLCAD2025-Contest-Problem-Statement.pdf*](./MLCAD2025-Contest-Problem-Statement.pdf): Contest description.
-  - [*design*](./designs): Synthesized netlist, floorplan DEF, SDC and the IR tables.
-  - [*platform/ASAP7*](./platform/ASAP7): ASAP7 cell library for the designs.
-  - [*src*](./src)
-    - [*example*](./src/example): Example scripts showing how to use OpenROAD Python API and CircuitOps LPG to do operations.
-    - [*IR_tables_generator*](./src/IR_tables_generator): Python scripts to generate the intermediate files containing the updated timing values and capacitance values using OpenROAD after gate sizing. 
-    - [*evaluation*](./src/evaluation): Evaluation scripts for the contest and the evaluation method for users of the OpenROAD Python API.
-    
-## Materials for using OpenROAD's Python API and Nvidia's CircuitOps
-  - R. Liang, A. Agnesina, G. Pradipta, V. A. Chhabria and H. Ren, "Invited Paper: CircuitOps: An ML Infrastructure Enabling Generative AI for VLSI Circuit Optimization," in ICCAD, 2023
-    - [CircuitOps: An ML Infrastructure Enabling Generative AI for VLSI Circuit Optimization](https://ieeexplore.ieee.org/abstract/document/10323611)
-  - V. A. Chhabria, W. Jiang, A. B. Kahng, R. Liang, H. Ren, S. S. Sapatnekar and B.-Y. Wu, "OpenROAD and CircuitOps: Infrastructure for ML EDA Research and Education," in VTS, 2024
-    - [OpenROAD and CircuitOps: Infrastructure for ML EDA Research and Education](https://vlsicad.ucsd.edu/Publications/Conferences/407/c407.pdf)
-  - CircuitOps and OpenROAD Python API Tutorial at ASP-DAC 2024
-    - [ASU-VDA-Lab/ASP-DAC24-Tutorial](https://github.com/ASU-VDA-Lab/ASP-DAC24-Tutorial)
-  - OpenROAD GitHub repository
-    - [The-OpenROAD-Project/OpenROAD](https://github.com/The-OpenROAD-Project/OpenROAD)
-  - CircuitOps GitHub repository
-    - [NVlabs/CircuitOps](https://github.com/NVlabs/CircuitOps/)
+Turn the EDA flow (OpenROAD / GLOAM / CircuitOps) into a reinforcement-learning (RL) environment:
 
-## Build OpenROAD and CircuitOps
+1. Agent picks tool parameters (action)  
+2. Tools run and produce QoR metrics (observation)  
+3. Reward is computed from QoR  
+4. Repeat for many steps/episodes
 
-###  Option 1: Build using Docker 
-The following technique assumes you have docker installed on your machine. You can install docker from [here](https://docs.docker.com/engine/install/). Build the docker image and run using the following commands:
-```
-docker build -t <image_name>.
-docker run -it --name <container_name> <image_name>
-```
-Note: Make sure you are using the latest github repo version.
+A mock runner lets us develop/test RL logic before the real pipeline is ready.
 
-### Option 2: Build locally
-The following technique assumes you have a machine with the required Ubuntu OS prerequisite of OpenROAD and CircuitOps.
+---
 
-Install dependencies for OpenROAD:
-```
-sudo ./OpenROAD/etc/DependencyInstaller.sh
-```
-
-Install dependencies for CircuitOps and ML EDA applications:
-```
-sudo apt-get install -y python3-matplotlib
-sudo apt-get install -y nvidia-cuda-toolkit
-sudo apt-get update
-sudo apt-get install -y python3-graph-tool
-sudo apt-get update && apt-get install -y gnupg2 ca-certificates
-sudo apt-get install -y python3-pip
-pip3 install --no-cache-dir torch==2.2.0
-pip3 install numpy==1.24.4
-pip3 install dgl==0.9.1
-pip3 install pandas
-pip3 install networkx==2.6.3
-pip3 install scikit-learn
-pip3 install tqdm==4.53.0
-```
-
-Once packages have been installed, build OpenROAD:
-
-```
-cd ./OpenROAD/
-mkdir build
-cd build
-cmake ..
-make -j
-```
-## Benchmark Statistics [Post global route metrics]
-
-|Design              |Gate count|Clock period (ns)|WNS (ns)|TNS (ns)  |Total slew violation difference (ns)|Slew violation count|Total load capacitance violation difference (fF)|Capacitance violation count|Total leakge power (uW)|Total overflow|
-|--------------------|----------|-----------------|--------|----------|--------------------|--------------------|-------------------|-------------------|-----------------|--------|
-|ac97_top            |8029      |0.12             |-0.0676 |-17.9214 |0.5062              |15                  |0                  |0                  |82.7931          |0       |
-|aes_cipher_top      |10965     |0.32             |-0.1605 |-18.8457 |9.7689              |183                 |6.5894             |5                  |29.7626          |0       |
-|NV_NVDLA_partition_m|17843     |0.40             |-0.2086 |-11.9062 |54.4973             |368                 |344.9269           |9                  |161.3232         |0       |
-|fpu                 |19725     |3.68             |-1.2077 |-59.3346 |23.7857             |124                 |4.5460             |1                  |19.2539          |0       |
-|NV_NVDLA_partition_p|58216     |1.00             |-0.4919 |-747.1107|1386.1164           |13422               |7692.2596          |141                |579.8336         |0       |
-|NV_NVDLA_partition_c|155686    |3.00             |-0.7218 |-18.8252 |20854.7798          |80297               |66908.0706         |1307               |18099.6639       |0       |
-
-(Reported by OpenSTA)
-
-## 🏆 Leaderboard – Alpha Submission (Top Teams per Design)
-
-| Design                     | Top Team(s)       |
-|----------------------------|-------------------|
-| ac97_top                   | Team25            |
-| aes_cipher_top             | Team23 & Team25   |
-| NV_NVDLA_partition_m       | Team23            |
-| fpu                        | Team25            |
-| NV_NVDLA_partition_p       | Team23            |
-| NV_NVDLA_partition_c       | Team25            |
-| Hidden1                    | Team23 & Team25   |
-| Hidden2                    | Team25            |
-| Hidden3                    | Team23            |
-| Hidden4                    | Team23            |
+## 2. Directory Structure
+rl/
+├─ agents/
+│ ├─ base_agent.py # Abstract agent API
+│ └─ dqn_agent.py # Minimal DQN (discrete actions)
+│
+├─ configs/
+│ └─ config_example.yaml # Example config (env/agent/trainer/reward)
+│
+├─ envs/
+│ ├─ base_env.py # Abstract Env (reset/step)
+│ └─ openroad_env.py # Main Env: action idx → params → tool run → QoR/reward
+│
+├─ interfaces/
+│ ├─ actions.yaml # Action schema: parameter names/types/ranges
+│ ├─ qor_schema.yaml # QoR schema: metrics, units, better/worse
+│ └─ README_interfaces.md # Contract doc for RL ↔ HW
+│
+├─ memory/
+│ └─ replay_buffer.py # FIFO buffer for off-policy RL
+│
+├─ runners/
+│ ├─ mock_runner.py # Fake QoR (no tool dependency)
+│ └─ tool_runner.py # Real tool wrapper + QoR parsing hooks
+│
+├─ scripts/
+│ ├─ run_openroad_with_params.py # Called via openroad -python; reads params JSON, runs flow, dumps QoR
+│ ├─ qor_parser.py # Parse QoR from stdout/JSON
+│ ├─ train.py # Training entry
+│ ├─ eval.py # Evaluation entry
+│ └─ debug_spaces.py # Sanity check for action encoder
+│
+├─ trainers/
+│ └─ trainer.py # Generic DQN-style training loop
+│
+└─ utils/
+├─ action_encoder.py # Discrete action index ↔ param dict (from actions.yaml)
+├─ reward_fn.py # Reward calculator (weights, normalization)
+├─ schema_loader.py # YAML schema loaders
+├─ logger.py # Stdout + JSONL logger
+└─ config.py # YAML config loader
 
 
+### Module Flow
 
- 
+1. **Agent** outputs a discrete action index.  
+2. **OpenRoadEnv** decodes it via `ActionEncoder` → param dict → calls a **Runner**.  
+3. **Runner**:
+   - `MockRunner`: returns fake QoR, or  
+   - `ToolRunner.run_openroad()`: writes params JSON → calls `run_openroad_with_params.py` using `openroad -python` → parses QoR with `qor_parser.py`.  
+4. **Env** computes reward via `RewardFn` and returns `(obs, reward, done, info)`.  
+5. **Trainer** manages experience collection + learning with `ReplayBuffer` and the `Agent`.
+
+---
+
+## 3. Current Capabilities
+
+- Mock pipeline fully works (no dependency on HW).
+- Discrete action space auto-generated from `actions.yaml`.
+- Reward function configurable via YAML (no code change).
+- Runs inside Apptainer (`/workspace` bind).
+- Easy to swap/extend agents (PPO/SAC, etc.).
+
+---
+
+## 4. What We Need From the Hardware/Tool Team
+
+Please confirm/adjust and provide:
+
+1. **Action Space Specification**  
+   - Final parameter list: names, types (float/int/categorical/bool), valid ranges/steps.  
+   - Constraints/dependencies among parameters.  
+   - Preferred passing method: JSON file, CLI flags, Tcl variables, etc.
+
+2. **QoR Output Contract**  
+   - Exact metrics we will receive (wirelength, slack, power, congestion, etc.).  
+   - Output format (JSON, stdout `key=value`, or report file paths) + a sample output.
+
+3. **Execution Flow / Scripts**  
+   - The command(s) or scripts to run per RL step.  
+   - Episode reset procedure (how to clean/import design each step).  
+   - Typical runtime per run; parallelism allowed? timeouts/quotas?
+
+4. **Paths & Environment**  
+   - Final tool/script locations (OpenROAD/GLOAM/CircuitOps).  
+   - Required environment variables/config files/licenses.
+
+**After we get these:**
+
+- Update `actions.yaml` / `qor_schema.yaml`.  
+- Implement real param→Tcl/CLI mapping in `run_openroad_with_params.py`.  
+- Parse real QoR reports in `qor_parser.py`.  
+- Tune reward normalization/weights; start baseline RL runs.
+
+---
+
+## 5. How RL Uses Your Data
+
+1. Agent selects parameters → saved to JSON.  
+
+2. Command executed inside container:
+
+   ```bash
+   cd /workspace
+   /opt/mlcad/MLCAD25-Contest-Scripts-Benchmarks/OpenROAD/build/src/openroad \
+       -python rl/scripts/run_openroad_with_params.py \
+       --params /workspace/tmp/params.json \
+       --design ac97_top \
+       --out_qor /workspace/tmp/qor.json
+
+3. Tool flow runs, generates QoR (stdout/JSON/reports).
+
+4. Parser extracts metrics, Env computes reward, returns to RL loop.
+
+## 6. Run (Mock Mode)
+# Inside Apptainer at /workspace
+python rl/scripts/debug_spaces.py     # Inspect action space size
+python rl/scripts/train.py            # Train with mock QoR
+
+## 7. Possible Next Step
+ Replace placeholders in actions.yaml and qor_schema.yaml with finalized specs.
+ Implement real param→tool mapping & QoR parsing.
+ Add unit tests (pytest) for encoder/parser/reward/runners.
+ Provide rule-based/grid-search baselines for comparison.
+
