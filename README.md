@@ -93,7 +93,7 @@ rl/
 
 ---
 
-## 4. What We Need From the Hardware/Tool Team
+## 4. What We Need
 
 Please confirm/adjust and provide:
 
@@ -124,7 +124,7 @@ Please confirm/adjust and provide:
 
 ---
 
-## 5. How RL Uses Your Data
+## 5. How RL Uses the Data
 
 1. Agent selects parameters → saved to JSON.  
 
