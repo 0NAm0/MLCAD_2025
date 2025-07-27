@@ -1,6 +1,6 @@
 # RL Framework for MLCAD25
 
-**Status:** RL scaffold is implemented and runs with a mock backend. We’re waiting on the hardware/tool team to finalize parameters, scripts, and QoR outputs to switch to the real flow.
+**Status:** RL scaffold is implemented and runs with a mock backend. 
 
 ---
 
