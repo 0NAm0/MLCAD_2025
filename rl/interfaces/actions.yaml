@@ -1,0 +1,36 @@
+# List all tunable parameters (actions) the RL agent can choose.
+# Fill in real names/ranges when HW team finalizes them.
+
+actions:
+  - name: place_density
+    type: float          # float | int | categorical | bool
+    min: 0.50
+    max: 0.80
+    step: 0.01
+    default: 0.65
+    description: "Target placement density for global placement."
+
+  - name: global_route_congestion_weight
+    type: float
+    min: 0.0
+    max: 1.0
+    step: 0.05
+    default: 0.3
+    description: "Weight to penalize congestion during global routing."
+
+  - name: cts_buffer_insertion
+    type: categorical
+    values: ["low", "medium", "high"]
+    default: "medium"
+    description: "Clock tree synthesis buffer insertion effort level."
+
+  - name: layer_assignment_strategy
+    type: categorical
+    values: ["minWL", "balanced", "timing_first"]
+    default: "balanced"
+    description: "Strategy for layer assignment (example placeholder)."
+
+  # Add more when needed...
+metadata:
+  version: 0.1
+  note: "Replace placeholders with real parameters once available."

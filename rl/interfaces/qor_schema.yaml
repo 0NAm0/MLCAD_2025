@@ -1,0 +1,49 @@
+# Define exactly what QoR metrics the tool side returns,
+# their meaning, units, and how RL should interpret them.
+
+metrics:
+  - name: wirelength
+    unit: micron
+    better: lower
+    dtype: float
+    description: "Total routed wirelength."
+
+  - name: timing_slack
+    unit: ns
+    better: higher
+    dtype: float
+    description: "Worst negative slack (can be negative)."
+
+  - name: tns
+    unit: ns
+    better: higher
+    dtype: float
+    description: "Total negative slack."
+
+  - name: power_dynamic
+    unit: mW
+    better: lower
+    dtype: float
+    description: "Dynamic power estimation."
+
+  - name: power_leakage
+    unit: mW
+    better: lower
+    dtype: float
+    description: "Leakage power estimation."
+
+  - name: congestion_max
+    unit: percentage
+    better: lower
+    dtype: float
+    description: "Maximum congestion ratio over all grid cells."
+
+  - name: via_count
+    unit: count
+    better: lower
+    dtype: int
+    description: "Total number of vias used."
+
+metadata:
+  version: 0.1
+  note: "HW team should guarantee these keys exist in their output JSON/CSV."
