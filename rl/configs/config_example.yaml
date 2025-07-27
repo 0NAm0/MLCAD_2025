@@ -2,7 +2,20 @@ env:
   name: OpenRoadEnv
   design_name: ac97_top
   work_dir: /workspace
-  use_mock: true           # set false when real tool pipeline is ready
+  use_mock: true
+  max_episode_len: 50
+  actions_schema: rl/interfaces/actions.yaml
+  qor_schema: rl/interfaces/qor_schema.yaml
+
+reward:
+  weights:
+    wirelength: -1e-6
+    power_dynamic: -0.1
+    timing_slack: 1.0
+  slack_penalty_if_negative: 1.0
+  normalize:
+    wirelength: {ref: 1.5e6, scale: 3.0e5}
+    power_dynamic: {ref: 150.0, scale: 50.0}
 
 trainer:
   total_steps: 10000

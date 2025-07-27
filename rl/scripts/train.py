@@ -17,11 +17,13 @@ def main(cfg_path: str = "rl/configs/config_example.yaml"):
 
     # 1. Build env
     env_cfg = cfg["env"]
-    env = OpenRoadEnv(**env_cfg)
+    env = OpenRoadEnv(**env_cfg, reward_cfg=cfg.get("reward"))
 
     # 2. Build agent (placeholder dims)
     agent_cfg = cfg["agent"]
-    agent = DQNAgent(agent_cfg, obs_dim=3, act_dim=11)
+    act_dim = env.action_space()["discrete"]   
+    obs_dim = 3  
+    agent = DQNAgent(agent_cfg, obs_dim=obs_dim, act_dim=act_dim)
 
     # 3. Trainer
     trainer_cfg = cfg["trainer"]
