@@ -143,7 +143,7 @@ Please confirm/adjust and provide:
 4. Parser extracts metrics, Env computes reward, returns to RL loop.
 
 ## 6. Run (Mock Mode)
-# Inside Apptainer at /workspace
+### Inside Apptainer at /workspace
 python rl/scripts/debug_spaces.py     # Inspect action space size
 python rl/scripts/train.py            # Train with mock QoR
 
