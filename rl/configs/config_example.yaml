@@ -1,5 +1,4 @@
 env:
-  name: OpenRoadEnv
   design_name: ac97_top
   work_dir: /workspace
   use_mock: false                                    // can change to false
@@ -18,7 +17,7 @@ reward:
     power_dynamic: {ref: 150.0, scale: 50.0}
 
 trainer:
-  total_steps: 10000
+  total_steps: 1
   eval_interval: 1000
   save_interval: 2000
   max_episode_len: 50
@@ -26,7 +25,7 @@ trainer:
 agent:
   type: DQN
   gamma: 0.99
-  lr: 1e-4
+  lr: 0.0001        # learning rate
   batch_size: 64
   replay_size: 50000
   target_update_interval: 1000
