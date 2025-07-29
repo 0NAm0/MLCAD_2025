@@ -2,7 +2,7 @@ env:
   name: OpenRoadEnv
   design_name: ac97_top
   work_dir: /workspace
-  use_mock: true
+  use_mock: false                                    // can change to false
   max_episode_len: 50
   actions_schema: rl/interfaces/actions.yaml
   qor_schema: rl/interfaces/qor_schema.yaml
