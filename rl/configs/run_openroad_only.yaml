@@ -1,0 +1,31 @@
+env:
+  design_name: ac97_top
+  work_dir: /workspace
+  use_mock: false           
+  max_episode_len: 50
+  actions_schema: rl/interfaces/actions.yaml
+  qor_schema: rl/interfaces/qor_schema.yaml
+
+reward:
+  weights:
+    wns:  1.0
+    wirelength: -1e-6
+    power: -0.1
+    congestion: -10.0
+  normalize: {}             # if need to
+
+trainer:
+  total_steps: 100          
+  eval_interval: 20
+  save_interval: 50
+
+agent:
+  type: DQN
+  gamma: 0.99
+  lr: 0.0001
+  batch_size: 32
+  replay_size: 5000
+  target_update_interval: 100
+  epsilon_start: 1.0
+  epsilon_end: 0.05
+  epsilon_decay_steps: 800
