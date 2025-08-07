@@ -30,7 +30,35 @@ actions:
     default: "balanced"
     description: "Strategy for layer assignment (example placeholder)."
 
-  # Add more when needed...
+  # Add more when needed
 metadata:
   version: 0.1
   note: "Replace placeholders with real parameters once available."
+
+
+# -------------------------------------------------------------------
+# Logic-transformation actions (gate_op)
+- op: clone_buffer
+  type: gate_op
+  target_master: BUF
+  description: "Make a 1:1 fanout clone of an existing BUF instance."
+
+- op: split_nand2
+  type: gate_op
+  target_master: NAND2
+  result_masters: [ NAND2, NAND2 ]
+  description: "Replace a 2-input NAND with two NAND2 + OR wiring (AIG style)."
+
+- op: split_nand3
+  type: gate_op
+  target_master: NAND3
+  result_masters: [ NAND3 ]
+  fanin_limit: 2          # custom field you can parse inside apply_gate_op
+  description: "Break a 3-input NAND into a tree of 2-input NANDs."
+
+- op: decompose_ao21
+  type: gate_op
+  target_master: AO21
+  result_masters: [ NAND2, NAND2, OR2 ]
+  description: "Decompose AO21 into two NAND2 feeding an OR2."
+
